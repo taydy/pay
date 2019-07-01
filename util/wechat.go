@@ -2,7 +2,10 @@ package util
 
 import (
 	"crypto/md5"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io/ioutil"
 	"sort"
 	"strings"
 	"time"
@@ -39,4 +42,24 @@ func WeChatValidSign(params map[string]interface{}, key string) bool {
 
 func FormatTime(time time.Time) string {
 	return time.Format("20060102150405")
+}
+
+// 加载微信证书
+func LoadWxTlsConfig(certKeyPath string, KeyPath string, caPath string) *tls.Config {
+	cert, err := tls.LoadX509KeyPair(certKeyPath, KeyPath)
+	if err != nil {
+		panic(err)
+	}
+
+	caData, err := ioutil.ReadFile(caPath)
+	if err != nil {
+		panic(err)
+	}
+	pool := x509.NewCertPool()
+	pool.AppendCertsFromPEM(caData)
+	return &tls.Config{
+		InsecureSkipVerify: true,
+		Certificates:       []tls.Certificate{cert},
+		RootCAs:            pool,
+	}
 }

@@ -4,9 +4,12 @@ import (
 	"crypto"
 	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"github.com/taydy/pay/struct"
+	"io/ioutil"
 	"sort"
 	"strconv"
 	"strings"
@@ -27,6 +30,7 @@ func CentsToYuan(cents int) string {
 	return amount
 }
 
+// 阿里支付参数加签
 func AliSign(params map[string]interface{}, privateKey *rsa.PrivateKey) string {
 	var keys []string
 	var origin []string
@@ -78,6 +82,7 @@ func verifySign(originalData string, signData string, publicKey *rsa.PublicKey) 
 	return true
 }
 
+// 校验 ali 支付签名
 func ValidAliSign(data string, sign string, publicKey *rsa.PublicKey) bool {
 	return verifySign(data, sign, publicKey)
 }
@@ -86,3 +91,34 @@ func TransferSuccess(result *_struct.AliTransferResult) bool {
 	return result.AlipayFundTransToaccountTransferResponse.Code == "10000" && result.AlipayFundTransToaccountTransferResponse.PayDate != ""
 }
 
+// 加载支付宝私钥
+func LoadAliPrivateKey(path string) *rsa.PrivateKey {
+	PrivateKeyBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err.Error)
+	}
+	blockPrivate, _ := pem.Decode(PrivateKeyBytes)
+	if blockPrivate == nil {
+		panic("No RSA Private Key")
+	}
+	privateKey, err := x509.ParsePKCS1PrivateKey(blockPrivate.Bytes)
+	if err != nil {
+		panic(err.Error)
+	}
+	return privateKey
+}
+
+// 加载支付宝公钥
+func LoadAliPublicKey(path string) *rsa.PublicKey {
+	aliPublicKeyByte, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err.Error)
+	}
+	aliPublicKey, _ := base64.StdEncoding.DecodeString(string(aliPublicKeyByte))
+	var pubInterface interface{}
+	pubInterface, err = x509.ParsePKIXPublicKey(aliPublicKey)
+	if err != nil {
+		panic(err)
+	}
+	return pubInterface.(*rsa.PublicKey)
+}

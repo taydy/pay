@@ -2,13 +2,18 @@
 
 | 支付方式    | 是否支持 |
 | ----------- | -------- |
-| 阿里 web    | ✅       |
-| 阿里 wap    | ✅        |
-| 阿里 app    | ✅      |
+| 支付宝 web    | ✅       |
+| 支付宝 wap    | ✅        |
+| 支付宝 app    | ✅      |
 | 微信 web    | ✅         |
 | 微信 h5     | ✅         |
 | 微信 app    | ✅         |
 | 微信 小程序 | ✅         |
+
+| 转账方式    | 是否支持 |
+| ----------- | -------- |
+| 支付宝    | ✅       |
+| 微信    | ✅        |
 
 ### 示例
 #### 微信 App 支付
@@ -69,4 +74,14 @@ func AliAppPay(orderId string, amount int, description string, notifyUrl string,
 	}
 	return result, nil
 }
+```
+
+#### 工具类
+```
+// 微信证书加载
+func LoadWxTlsConfig(certKeyPath string, KeyPath string, caPath string) *tls.Config {}
+
+// 支付宝证书加载
+func LoadAliPrivateKey(path string) *rsa.PrivateKey {}
+func LoadAliPublicKey(path string) *rsa.PublicKey {}
 ```
