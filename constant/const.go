@@ -35,6 +35,7 @@ const (
 	ALI_PAY_API_PAGE_PAY     = "alipay.trade.page.pay"                          // 统一收单下单并支付页面接口 https://docs.open.alipay.com/api_1/alipay.trade.page.pay/
 	ALI_PAY_API_WAP_PAY      = "alipay.trade.wap.pay"                           // 手机端统一下单接口
 	ALI_PAY_API_APP_PAY      = "alipay.trade.app.pay"                           // app 端统一下单
+	ALI_PAY_API_PRE_CREATE   = "alipay.trade.precreate"                         // 统一收单线下交易预创建（扫码支付）
 	ALI_PAY_API_QUERY        = "alipay.trade.query"                             // 统一收单线下交易查询接口 https://docs.open.alipay.com/api_1/alipay.trade.query
 	ALI_PAY_API_REFUND       = "alipay.trade.refund"                            // 统一收单交易退款接口 https://docs.open.alipay.com/api_1/alipay.trade.refund
 	ALI_PAY_API_REFUND_QUERY = "alipay.trade.fastpay.refund.query"              // 统一收单交易退款查询接口 https://docs.open.alipay.com/api_1/alipay.trade.fastpay.refund.query
@@ -47,12 +48,15 @@ const (
 	ALI_PAY_FUND_TRANS_TO_ACCOUNT_TRANSFER_RESPONSE = "alipay_fund_trans_toaccount_transfer_response"
 	ALI_PAY_TRADE_QUERY_RESPONSE                    = "alipay_trade_query_response"
 	ALI_PAY_TRADE_CLOSE_RESPONSE                    = "alipay_trade_close_response"
+	ALI_PAY_TRADE_PRECREATE_RESPONSE                = "alipay_trade_precreate_response"
+	ALI_PAY_TRADE_REFUND_RESPONSE                   = "alipay_trade_refund_response"
 )
 
 const (
-	ALI_PAY_PRODUCT_CODE_WAP       = "QUICK_WAP_WAY"
-	ALI_PAY_PRODUCT_CODE_MSECURITY = "QUICK_MSECURITY_PAY"
-	ALI_PAY_PRODUCT_CODE_INSTANT   = "FAST_INSTANT_TRADE_PAY"
+	ALI_PAY_PRODUCT_CODE_WAP             = "QUICK_WAP_WAY"
+	ALI_PAY_PRODUCT_CODE_MSECURITY       = "QUICK_MSECURITY_PAY"
+	ALI_PAY_PRODUCT_CODE_INSTANT         = "FAST_INSTANT_TRADE_PAY"
+	ALI_PAY_PRODUCT_DACE_TO_FACE_PAYMENT = "FACE_TO_FACE_PAYMENT"
 )
 
 const (

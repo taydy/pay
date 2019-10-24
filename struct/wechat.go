@@ -97,3 +97,37 @@ type WeChatSnsOauthResponse struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
 }
+
+//退款订单请求
+type WXRefundReq struct {
+	AppID         string `xml:"appid" structs:"appid,omitempty"`
+	MchID         string `xml:"mch_id" structs:"mch_id,omitempty"`
+	NonceStr      string `xml:"nonce_str" structs:"nonce_str,omitempty"`
+	Sign          string `xml:"sign" structs:"sign,omitempty"`
+	TotalFee      int    `xml:"total_fee" structs:"total_fee,omitempty"`
+	OutTradeNo    string `xml:"out_trade_no" structs:"out_trade_no,omitempty"`
+	OutRefundNo   string `xml:"out_refund_no" structs:"out_refund_no,omitempty"`
+	TransactionID string `xml:"transaction_id" structs:"transaction_id,omitempty"`
+	RefundFee     int    `xml:"refund_fee" structs:"refund_fee,omitempty"`
+}
+
+//退款订单返回
+type WXRefundResp struct {
+	AppID    string `xml:"appid" structs:"appid,omitempty"`
+	MchID    string `xml:"mch_id" structs:"mch_id,omitempty"`
+	NonceStr string `xml:"nonce_str" structs:"nonce_str,omitempty"`
+	Sign     string `xml:"sign" structs:"sign,omitempty"`
+
+	ReturnCode    string `xml:"return_code" structs:"return_code,omitempty"`
+	ReturnMsg     string `xml:"return_msg" structs:"return_msg,omitempty"`
+	ResultCode    string `xml:"result_code" structs:"result_code,omitempty"`
+	ErrCode       string `xml:"err_code" structs:"err_code,omitempty"`
+	ErrCodeDes    string `xml:"err_code_des" structs:"err_code_des,omitempty"`
+	TransactionID string `xml:"transaction_id" structs:"transaction_id,omitempty"`
+	OutRefundNo   string `xml:"out_refund_no" structs:"out_refund_no,omitempty"`
+	OutTradeNo    string `xml:"out_trade_no" structs:"out_trade_no,omitempty"`
+	RefundFee     int    `xml:"refund_fee" structs:"refund_fee,omitempty"`
+	TotalFee      int    `xml:"total_fee" structs:"total_fee,omitempty"`
+	CashFee       int    `xml:"cash_fee" structs:"cash_fee,omitempty"`
+	WXRefundID    string `xml:"refund_id" structs:"refund_id,omitempty"`
+}

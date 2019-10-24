@@ -23,24 +23,35 @@ type AliPayUnifiedOrder struct {
 
 type BizContent struct {
 	/** 请求参数 */
-	OutTradeNo         string `json:"out_trade_no,omitempty"`         // 商户网站唯一订单号
-	ProductCode        string `json:"product_code,omitempty"`         // 销售产品码，商家和支付宝签约的产品码
-	TotalAmount        string `json:"total_amount,omitempty"`         // 订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
-	Subject            string `json:"subject,omitempty"`              // 商品的标题/交易标题/订单标题/订单关键字等。
-	Body               string `json:"body,omitempty"`                 // 对一笔交易的具体描述信息。如果是多种商品，请将商品描述字符串累加传给body。
-	TimeExpire         string `json:"time_expire,omitempty"`          // 绝对超时时间，格式为yyyy-MM-dd HH:mm。 注：1）以支付宝系统时间为准；2）如果和timeout_express参数同时传入，以time_expire为准。
-	PassBackParams     string `json:"passback_params,omitempty"`      // 公用回传参数，如果请求时传递了该参数，则返回给商户时会回传该参数。支付宝会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝
-	GoodTypes          string `json:"goods_type,omitempty"`           // 商品主类型：0—虚拟类商品，1—实物类商品注：虚拟类商品不支持使用花呗渠道
-	TimeoutExpress     string `json:"timeout_express,omitempty"`      // 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。注：若为空，则默认为15d。
-	PromoParams        string `json:"promo_params,omitempty"`         // 优惠参数注：仅与支付宝协商后可用
-	EnablePayChannels  string `json:"enable_pay_channels,omitempty"`  // 可用渠道，用户只能在指定渠道范围内支付当有多个渠道时用“,”分隔注：与disable_pay_channels互斥
-	StoreId            string `json:"store_id,omitempty"`             // 商户门店编号。该参数用于请求参数中以区分各门店，非必传项
-	DisablePayChannels string `json:"disable_pay_channels,omitempty"` // 禁用渠道，用户不可用指定渠道支付当有多个渠道时用“,”分隔注：与enable_pay_channels互斥
-	QrPayMode          string `json:"qr_pay_mode,omitempty"`          // PC扫码支付的方式，支持前置模式和跳转模式
-	QrcodeWidth        int    `json:"qrcode_width,omitempty"`         // 商户自定义二维码宽度 注：qr_pay_mode=4时该参数生效
-	IntegrationType    string `json:"integration_type,omitempty"`     // 请求后页面的集成方式,默认值为PCWEB  1.ALIAPP：支付宝钱包内; 2.PCWEB：PC端访问
-	RequestFromUrl     string `json:"request_from_url,omitempty"`     // 请求来源地址。如果使用ALIAPP的集成方式，用户中途取消支付会返回该地址。
-	BusinessParams     string `json:"business_params,omitempty"`      // 商户传入业务信息，具体值要和支付宝约定，应用于安全，营销等参数直传场景，格式为json格式
+	OutTradeNo           string `json:"out_trade_no,omitempty"`         // 商户网站唯一订单号
+	ProductCode          string `json:"product_code,omitempty"`         // 销售产品码，商家和支付宝签约的产品码
+	TotalAmount          string `json:"total_amount,omitempty"`         // 订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
+	Subject              string `json:"subject,omitempty"`              // 商品的标题/交易标题/订单标题/订单关键字等。
+	Body                 string `json:"body,omitempty"`                 // 对一笔交易的具体描述信息。如果是多种商品，请将商品描述字符串累加传给body。
+	TimeExpire           string `json:"time_expire,omitempty"`          // 绝对超时时间，格式为yyyy-MM-dd HH:mm。 注：1）以支付宝系统时间为准；2）如果和timeout_express参数同时传入，以time_expire为准。
+	PassBackParams       string `json:"passback_params,omitempty"`      // 公用回传参数，如果请求时传递了该参数，则返回给商户时会回传该参数。支付宝会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝
+	GoodTypes            string `json:"goods_type,omitempty"`           // 商品主类型：0—虚拟类商品，1—实物类商品注：虚拟类商品不支持使用花呗渠道
+	TimeoutExpress       string `json:"timeout_express,omitempty"`      // 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。注：若为空，则默认为15d。
+	QRCodeTimeoutExpress string `json:"qr_code_timeout_express"`        // 该笔订单允许的最晚付款时间，逾期将关闭交易，从生成二维码开始计时。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
+	PromoParams          string `json:"promo_params,omitempty"`         // 优惠参数注：仅与支付宝协商后可用
+	EnablePayChannels    string `json:"enable_pay_channels,omitempty"`  // 可用渠道，用户只能在指定渠道范围内支付当有多个渠道时用“,”分隔注：与disable_pay_channels互斥
+	StoreId              string `json:"store_id,omitempty"`             // 商户门店编号。该参数用于请求参数中以区分各门店，非必传项
+	DisablePayChannels   string `json:"disable_pay_channels,omitempty"` // 禁用渠道，用户不可用指定渠道支付当有多个渠道时用“,”分隔注：与enable_pay_channels互斥
+	QrPayMode            string `json:"qr_pay_mode,omitempty"`          // PC扫码支付的方式，支持前置模式和跳转模式
+	QrcodeWidth          int    `json:"qrcode_width,omitempty"`         // 商户自定义二维码宽度 注：qr_pay_mode=4时该参数生效
+	IntegrationType      string `json:"integration_type,omitempty"`     // 请求后页面的集成方式,默认值为PCWEB  1.ALIAPP：支付宝钱包内; 2.PCWEB：PC端访问
+	RequestFromUrl       string `json:"request_from_url,omitempty"`     // 请求来源地址。如果使用ALIAPP的集成方式，用户中途取消支付会返回该地址。
+	BusinessParams       string `json:"business_params,omitempty"`      // 商户传入业务信息，具体值要和支付宝约定，应用于安全，营销等参数直传场景，格式为json格式
+}
+
+type AlipayTradePrecreateResponse struct {
+	AlipayTradePrecreateResponse struct {
+		Code       string `json:"code,omitempty" structs:"code,omitempty"`                 // 网关返回码
+		Msg        string `json:"msg,omitempty" structs:"msg,omitempty"`                   // 网关返回码描述
+		OutTradeNo string `json:"out_trade_no,omitempty" structs:"out_trade_no,omitempty"` // 商户订单号
+		QRCode     string `json:"qr_code" structs:"qr_code,omitempty"`
+	} `json:"alipay_trade_precreate_response" structs:"alipay_trade_precreate_response,omitempty"`
+	Sign string `json:"sign" structs:"sign,omitempty"`
 }
 
 type AliPayResult struct {
@@ -93,5 +104,52 @@ type AliTransferResult struct {
 		OrderId  string `json:"order_id"`   // 支付宝转账单据号，成功一定返回，失败可能不返回也可能返回。
 		PayDate  string `json:"pay_date"`   // 支付时间：格式为yyyy-MM-dd HH:mm:ss，仅转账成功返回。
 	} `json:"alipay_fund_trans_toaccount_transfer_response"`
+	Sign string `json:"sign"`
+}
+
+type ALIPayNotifyResult struct {
+	NotifyTime        string `structs:"notify_time,omitempty" json:"notify_time" form:"notify_time"`                         // 通知时间
+	NotifyType        string `structs:"notify_type,omitempty" json:"notify_type" form:"notify_type"`                         // 通知类型
+	NotifyID          string `structs:"notify_id,omitempty" json:"notify_id" form:"notify_id"`                               // 通知校验ID
+	AppID             string `structs:"app_id,omitempty" json:"app_id" form:"app_id"`                                        // 开发者的app_id
+	AuthAppID         string `structs:"auth_app_id,omitempty" json:"auth_app_id" form:"auth_app_id"`                         // 开发者的auth_app_id
+	Charset           string `structs:"charset,omitempty" json:"charset" form:"charset"`                                     // 编码格式
+	Version           string `structs:"version,omitempty" json:"version" form:"version"`                                     // 接口版本
+	SignType          string `structs:"sign_type,omitempty" json:"sign_type" form:"sign_type"`                               // 签名类型
+	Sign              string `structs:"sign,omitempty" json:"sign" form:"sign"`                                              // 签名
+	TradeNo           string `structs:"trade_no,omitempty" json:"trade_no" form:"trade_no"`                                  // 支付宝交易号
+	OutTradeNo        string `structs:"out_trade_no,omitempty" json:"out_trade_no" form:"out_trade_no"`                      // 商户订单号
+	OutBizNo          string `structs:"out_biz_no,omitempty" json:"out_biz_no" form:"out_biz_no"`                            // 商户业务ID，主要是退款通知中返回退款申请的流水号
+	BuyerID           string `structs:"buyer_id,omitempty" json:"buyer_id" form:"buyer_id"`                                  // 买家支付宝用户号
+	BuyerLogonId      string `structs:"buyer_logon_id,omitempty" json:"buyer_logon_id" form:"buyer_logon_id"`                // 买家支付宝账号
+	SellerID          string `structs:"seller_id,omitempty" json:"seller_id" form:"seller_id"`                               // 卖家支付宝用户号
+	SellerEmail       string `structs:"seller_email,omitempty" json:"seller_email" form:"seller_email"`                      // 卖家支付宝账号
+	TradeStatus       string `structs:"trade_status,omitempty" json:"trade_status" form:"trade_status"`                      // 交易状态
+	TotalAmount       string `structs:"total_amount,omitempty" json:"total_amount" form:"total_amount"`                      // 订单金额
+	ReceiptAmount     string `structs:"receipt_amount,omitempty" json:"receipt_amount" form:"receipt_amount"`                // 实收金额
+	InvoiceAmount     string `structs:"invoice_amount,omitempty" json:"invoice_amount" form:"invoice_amount"`                // 开票金额
+	BuyerPayAmount    string `structs:"buyer_pay_amount,omitempty" json:"buyer_pay_amount" form:"buyer_pay_amount"`          // 付款金额
+	PointAmount       string `structs:"point_amount,omitempty" json:"point_amount" form:"point_amount"`                      // 集分宝金额
+	RefundFee         string `structs:"refund_fee,omitempty" json:"refund_fee" form:"refund_fee"`                            // 总退款金额
+	SendBackFee       string `structs:"send_back_fee,omitempty" json:"send_back_fee" form:"send_back_fee"`                   // 实际退款金额
+	Subject           string `structs:"subject,omitempty" json:"subject" form:"subject"`                                     // 订单标题
+	Body              string `structs:"body,omitempty" json:"body" form:"body"`                                              // 商品描述
+	GmtCreate         string `structs:"gmt_create,omitempty" json:"gmt_create" form:"gmt_create"`                            // 交易创建时间
+	GmtPayment        string `structs:"gmt_payment,omitempty" json:"gmt_payment" form:"gmt_payment"`                         // 交易付款时间
+	GmtRefund         string `structs:"gmt_refund,omitempty" json:"gmt_refund" form:"gmt_refund"`                            // 交易退款时间
+	GmtClose          string `structs:"gmt_close,omitempty" json:"gmt_close" form:"gmt_close"`                               // 交易结束时间
+	FundBillList      string `structs:"fund_bill_list,omitempty" json:"fund_bill_list" form:"fund_bill_list"`                // 支付金额信息
+	PassbackParams    string `structs:"passback_params,omitempty" json:"passback_params" form:"passback_params"`             // 回传参数
+	VoucherDetailList string `structs:"voucher_detail_list,omitempty" json:"voucher_detail_list" form:"voucher_detail_list"` // 优惠券信息
+}
+
+type AliTradeRefundResult struct {
+	AlipayTradeRefundResponse struct {
+		Code       string `json:"code,omitempty"`         // 网关返回码
+		Msg        string `json:"msg,omitempty"`          // 网关返回码描述
+		TradeNo    string `json:"trade_no,omitempty"`     // 支付宝交易号
+		OutTradeNo string `json:"out_trade_no,omitempty"` // 商户订单号
+		RefundFee  string `json:"refund_fee"`             // 退款金额
+	} `json:"alipay_trade_refund_response"`
 	Sign string `json:"sign"`
 }

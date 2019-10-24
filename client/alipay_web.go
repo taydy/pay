@@ -7,7 +7,6 @@ import (
 	"github.com/taydy/pay/constant"
 	"github.com/taydy/pay/struct"
 	"github.com/taydy/pay/util"
-	"time"
 )
 
 /** 阿里 Web 支付客户端。 */
@@ -24,7 +23,7 @@ func (c *AliWebPayClient) Pay(charge *_struct.Charge) (map[string]interface{}, e
 	m.AppId = c.AppID
 	m.Method = constant.ALI_PAY_API_PAGE_PAY
 	m.Charset = constant.CHARSET_UTF8
-	m.Timestamp = time.Now().Format(constant.TIME_FORMAT)
+	m.Timestamp = util.DongBaTime().Format(constant.TIME_FORMAT)
 	m.Version = "1.0"
 	m.NotifyUrl = charge.NotifyUrl
 	m.ReturnUrl = charge.ReturnUrl
@@ -34,7 +33,7 @@ func (c *AliWebPayClient) Pay(charge *_struct.Charge) (map[string]interface{}, e
 	bizContent.ProductCode = constant.ALI_PAY_PRODUCT_CODE_INSTANT
 	bizContent.TotalAmount = util.CentsToYuan(charge.TotalFee)
 	bizContent.Subject = charge.Body
-	bizContent.TimeExpire = time.Now().Add(constant.TIMEOUT_PAY).Format(constant.TIME_FORMAT)
+	bizContent.TimeExpire = util.DongBaTime().Add(constant.TIMEOUT_PAY).Format(constant.TIME_FORMAT)
 	bizContent.TimeoutExpress = fmt.Sprintf("%.fm", constant.TIMEOUT_PAY.Minutes())
 	bizContent.QrPayMode = constant.QR_PAY_MOD_IFRAME
 

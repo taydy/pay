@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
+	"github.com/taydy/pay/constant"
 	"github.com/taydy/pay/struct"
 	"io/ioutil"
 	"sort"
@@ -28,6 +29,29 @@ func CentsToYuan(cents int) string {
 
 	amount := yuanStr + "." + centStr
 	return amount
+}
+
+// 将以元为单位，保留两位小数的金额，转换成以分为单位的数值
+func YuanToCents(amount string) (int, bool) {
+	parts := strings.Split(amount, ".")
+	if len(parts) > 2 {
+		return 0, false
+	}
+
+	yuan, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return 0, false
+	}
+	total := yuan * 100
+
+	if len(parts) == 2 {
+		cents, err := strconv.Atoi(parts[1])
+		if err != nil || cents < 0 || cents >= 100 {
+			return 0, false
+		}
+		total += cents
+	}
+	return total, true
 }
 
 // 阿里支付参数加签
@@ -67,6 +91,7 @@ func rsaSign(originalData string, privateKey *rsa.PrivateKey) (string, error) {
 }
 
 func verifySign(originalData string, signData string, publicKey *rsa.PublicKey) bool {
+	fmt.Println(originalData)
 	sign, err := base64.StdEncoding.DecodeString(signData)
 	if err != nil {
 		return false
@@ -89,6 +114,10 @@ func ValidAliSign(data string, sign string, publicKey *rsa.PublicKey) bool {
 
 func TransferSuccess(result *_struct.AliTransferResult) bool {
 	return result.AlipayFundTransToaccountTransferResponse.Code == "10000" && result.AlipayFundTransToaccountTransferResponse.PayDate != ""
+}
+
+func RefundSuccess(result *_struct.AliTradeRefundResult) bool {
+	return result.AlipayTradeRefundResponse.Code == "10000" && strings.ToUpper(result.AlipayTradeRefundResponse.Msg) == constant.SUCCESS
 }
 
 // 加载支付宝私钥

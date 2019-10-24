@@ -10,6 +10,7 @@ import (
 	"github.com/taydy/pay/struct"
 	"github.com/taydy/pay/util"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"sort"
@@ -31,6 +32,36 @@ func (c *AliPayClient) UnifiedOrder(unifiedOrder *_struct.AliPayUnifiedOrder) (m
 	url := ToURL(constant.ALI_PAY_GATEWAY, structs.Map(unifiedOrder))
 	fmt.Printf("ali pay unified order url : %s \n", url)
 	return map[string]interface{}{"url": url}, nil
+}
+
+func (c *AliPayClient) TradePrecreate(unifiedOrder *_struct.AliPayUnifiedOrder) (*_struct.AlipayTradePrecreateResponse, error) {
+	url := ToURL(constant.ALI_PAY_GATEWAY, structs.Map(unifiedOrder))
+	fmt.Printf("ali pay trade precreate order url : %s \n", url)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("alipay unified order error: %v \n", err)
+		return nil, payErrors.ErrAlipayError
+	}
+
+	defer resp.Body.Close()
+
+	data, _ := ioutil.ReadAll(resp.Body)
+	fmt.Printf("ali pay order query response: %s \n", string(data))
+
+	err = c.validResult(data, constant.ALI_PAY_TRADE_PRECREATE_RESPONSE)
+	if err != nil {
+		return nil, err
+	}
+
+	payResult := &_struct.AlipayTradePrecreateResponse{}
+	decodeErr := json.Unmarshal(data, payResult)
+	if decodeErr != nil {
+		fmt.Printf("alipay order query error, error: %v \n", decodeErr)
+		return nil, payErrors.ErrAlipayError
+	}
+
+	return payResult, nil
 }
 
 /**
@@ -213,7 +244,12 @@ func (c *AliPayClient) validResult(data []byte, responseKey string) error {
 	return nil
 }
 
+func (c *AliPayClient) ValidAsyncResultByStruct(PayNotifyResult *_struct.ALIPayNotifyResult) bool {
+	return c.ValidAsyncResult(structs.Map(PayNotifyResult))
+}
+
 func (c *AliPayClient) ValidAsyncResult(params map[string]interface{}) bool {
+	log.Println(params)
 	var keys []string
 	var origin []string
 
@@ -230,6 +266,53 @@ func (c *AliPayClient) ValidAsyncResult(params map[string]interface{}) bool {
 
 	str := strings.Join(origin, "&")
 	return util.ValidAliSign(str, params["sign"].(string), c.PublicKey)
+}
+
+/**
+ * 退款。
+ */
+func (c *AliPayClient) Refund(tradeNo string, refundFee int) (bool, error) {
+	bizContent := make(map[string]interface{})
+	bizContent["trade_no"] = tradeNo
+	bizContent["refund_amount"] = util.CentsToYuan(refundFee)
+	bizContentByte, _ := json.Marshal(bizContent)
+	refundReq := map[string]interface{}{
+		"app_id":      c.AppID,
+		"method":      constant.ALI_PAY_API_REFUND,
+		"charset":     "UTF-8",
+		"sign_type":   "RSA2",
+		"timestamp":   time.Now().Format(constant.TIME_FORMAT),
+		"version":     "1.0",
+		"biz_content": string(bizContentByte),
+	}
+	refundReq["sign"] = util.AliSign(refundReq, c.PrivateKey)
+
+	url := ToURL(constant.ALI_PAY_GATEWAY, refundReq)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("alipay refund %s error: %v \n", tradeNo, err)
+		return false, payErrors.ErrAlipayCloseOrderError
+	}
+
+	defer resp.Body.Close()
+
+	data, _ := ioutil.ReadAll(resp.Body)
+	fmt.Printf("ali pay refund %s query response: %s \n", tradeNo, string(data))
+
+	err = c.validResult(data, constant.ALI_PAY_TRADE_REFUND_RESPONSE)
+	if err != nil {
+		return false, err
+	}
+
+	refundResult := &_struct.AliTradeRefundResult{}
+	decodeErr := json.Unmarshal(data, refundResult)
+	if decodeErr != nil {
+		fmt.Printf("alipay refund order query error, error: %v \n", decodeErr)
+		return false, payErrors.ErrAlipayError
+	}
+
+	return util.RefundSuccess(refundResult), nil
 }
 
 /**

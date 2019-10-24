@@ -23,6 +23,7 @@ type WeChatClient struct {
 	SecretKey      string // 密钥
 	PrivateKey     string // 私钥文件内容
 	PublicKey      string // 公钥文件内容
+	TLSConfig      *tls.Config
 }
 
 /**
@@ -61,7 +62,7 @@ func (c *WeChatClient) OrderQuery(unifiedOrder *_struct.WeChatUnifiedOrder) (*_s
 	return c.validResult(data)
 }
 
-func (c *WeChatClient) OrderQueryByOutTradeNo(outTradeNo string) (map[string]interface{}, error) {
+func (c *WeChatClient) OrderQueryByOutTradeNo(outTradeNo string) (*_struct.WeChatPayResult, error) {
 	unifiedOrder := _struct.WeChatUnifiedOrder{}
 	unifiedOrder.Appid = c.AppID
 	unifiedOrder.MchId = c.MchID
@@ -69,12 +70,7 @@ func (c *WeChatClient) OrderQueryByOutTradeNo(outTradeNo string) (map[string]int
 	unifiedOrder.NonceStr = util.RandomStr()
 	unifiedOrder.Sign = util.WeChatSign(structs.Map(unifiedOrder), c.SecretKey)
 
-	result, err := c.OrderQuery(&unifiedOrder)
-	if err != nil {
-		return nil, err
-	}
-
-	return structs.Map(result), nil
+	return c.OrderQuery(&unifiedOrder)
 }
 
 /**
@@ -198,4 +194,41 @@ func (c *WeChatClient) SnsOauthAccessToken(code string) (*_struct.WeChatSnsOauth
 		return nil, payErrors.NewBadRequestError(oauth.ErrCode, oauth.ErrMsg)
 	}
 	return oauth, nil
+}
+
+/**
+ * 退款。
+ */
+func (c *WeChatClient) Refund(tradeNo string, refundFee int) (bool, error) {
+	refundReq := &_struct.WXRefundReq{
+		AppID:         c.AppID,
+		MchID:         c.MchID,
+		NonceStr:      util.RandomStr(),
+		TotalFee:      refundFee,
+		OutRefundNo:   tradeNo,
+		TransactionID: tradeNo,
+		RefundFee:     refundFee,
+	}
+	refundReq.Sign = util.WeChatSign(structs.Map(refundReq), c.SecretKey)
+	xmlResponse, err := http.XmlSecurePost(constant.WECHAT_PAY_REFUND, refundReq, time.Second*10, c.TLSConfig)
+	if err != nil {
+		fmt.Printf("wechat refund order error: %v \n", err)
+		return false, payErrors.ErrWXPayError
+	}
+
+	defer xmlResponse.Body.Close()
+
+	data, _ := ioutil.ReadAll(xmlResponse.Body)
+	fmt.Printf("wechat refund query response: %s \n", data)
+
+	payResult := &_struct.WXRefundResp{}
+	decodeErr := xml.Unmarshal(data, payResult)
+	if decodeErr != nil {
+		fmt.Printf("wechat transfer error, error: %v \n", decodeErr)
+		return false, payErrors.ErrWXPayError
+	}
+	if payResult.ReturnCode == constant.SUCCESS || payResult.ResultCode == constant.SUCCESS {
+		return true, nil
+	}
+	return false, payErrors.NewBadRequestError(payErrors.WX_PAY_ERROR, payResult.ErrCodeDes)
 }
