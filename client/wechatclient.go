@@ -227,7 +227,7 @@ func (c *WeChatClient) Refund(tradeNo string, refundFee int) (bool, error) {
 		fmt.Printf("wechat transfer error, error: %v \n", decodeErr)
 		return false, payErrors.ErrWXPayError
 	}
-	if payResult.ReturnCode == constant.SUCCESS || payResult.ResultCode == constant.SUCCESS {
+	if payResult.ReturnCode == constant.SUCCESS && payResult.ResultCode == constant.SUCCESS {
 		return true, nil
 	}
 	return false, payErrors.NewBadRequestError(payErrors.WX_PAY_ERROR, payResult.ErrCodeDes)
