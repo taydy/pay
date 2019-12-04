@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -277,13 +278,14 @@ func (c *AliPayClient) Refund(tradeNo string, refundFee int) (bool, error) {
 	bizContent["refund_amount"] = util.CentsToYuan(refundFee)
 	bizContentByte, _ := json.Marshal(bizContent)
 	refundReq := map[string]interface{}{
-		"app_id":      c.AppID,
-		"method":      constant.ALI_PAY_API_REFUND,
-		"charset":     "UTF-8",
-		"sign_type":   "RSA2",
-		"timestamp":   time.Now().Format(constant.TIME_FORMAT),
-		"version":     "1.0",
-		"biz_content": string(bizContentByte),
+		"app_id":         c.AppID,
+		"method":         constant.ALI_PAY_API_REFUND,
+		"charset":        "UTF-8",
+		"sign_type":      "RSA2",
+		"timestamp":      time.Now().Format(constant.TIME_FORMAT),
+		"version":        "1.0",
+		"biz_content":    string(bizContentByte),
+		"out_request_no": fmt.Sprintf("%s%s", tradeNo, strconv.FormatInt(time.Now().UnixNano(), 10)[10:16]),
 	}
 	refundReq["sign"] = util.AliSign(refundReq, c.PrivateKey)
 

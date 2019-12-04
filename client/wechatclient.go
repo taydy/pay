@@ -12,6 +12,7 @@ import (
 	"github.com/taydy/pay/struct"
 	"github.com/taydy/pay/util"
 	"io/ioutil"
+	"strconv"
 	"time"
 )
 
@@ -205,7 +206,7 @@ func (c *WeChatClient) Refund(tradeNo string, refundFee int) (bool, error) {
 		MchID:         c.MchID,
 		NonceStr:      util.RandomStr(),
 		TotalFee:      refundFee,
-		OutRefundNo:   tradeNo,
+		OutRefundNo:   fmt.Sprintf("%s%s", tradeNo, strconv.FormatInt(time.Now().UnixNano(), 10)[10:16]),
 		TransactionID: tradeNo,
 		RefundFee:     refundFee,
 	}
